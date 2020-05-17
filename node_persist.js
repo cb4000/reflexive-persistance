@@ -1,8 +1,30 @@
 var redis = require('redis');
 var rediSearch  = require('redisearchclient');
-var subscriber = redis.createClient();
 //var client = redis.createClient(6380, 'localhost');
-var myRediSearch        = rediSearch(redis,'mentions',{ clientOptions : {host:'127.0.0.1',port:6380} });
+
+
+function retryStrat(options) {
+    if (options.error && options.error.code === "ECONNREFUSED") {
+      // End reconnecting on a specific error and flush all commands with
+      // a individual error
+      return new Error("The server refused the connection");
+    }
+    if (options.total_retry_time > 1000 * 60 * 60) {
+      // End reconnecting after a specific timeout and flush all commands
+      // with a individual error
+      return new Error("Retry time exhausted");
+    }
+    if (options.attempt > 10) {
+      // End reconnecting with built in error
+      return undefined;
+    }
+    // reconnect after
+    return Math.min(options.attempt * 100, 3000);
+  }
+var myRediSearch        = rediSearch(redis,'mentions',{ clientOptions : {host:'redisearch',port:6379,
+autoResubscribe: true,
+lazyConnect: false,
+maxRetriesPerRequest: 10000, retry_strategy:retryStrat} });
   //var myRediSearch        = rediSearch(client,'mentions');  
 
   myRediSearch.client.on("error",function(err) {
@@ -11,6 +33,10 @@ var myRediSearch        = rediSearch(redis,'mentions',{ clientOptions : {host:'1
 });
 
 
+var subscriber = redis.createClient( {host:'redis',port:6379,
+autoResubscribe: true,
+lazyConnect: false,
+maxRetriesPerRequest: 10000, retry_strategy:retryStrat});
 
 myRediSearch.client.monitor(function(err, res) {
     console.log("Entering monitoring mode.");

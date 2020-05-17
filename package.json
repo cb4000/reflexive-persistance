@@ -1,0 +1,25 @@
+{
+  "name": "reflexive-persistance",
+  "version": "1.0.0",
+  "description": "stores nlp results",
+  "main": "node_persist.js",
+  "dependencies": {
+    "redis": "^3.0.2",
+    "redisearchclient": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./node_persist.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cb4000/reflexive-persistance.git"
+  },
+  "author": "Charles Blount",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cb4000/reflexive-persistance/issues"
+  },
+  "homepage": "https://github.com/cb4000/reflexive-persistance#readme"
+}
