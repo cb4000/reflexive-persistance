@@ -2,7 +2,8 @@ var redis = require('redis');
 var rediSearch  = require('redisearchclient');
 //var client = redis.createClient(6380, 'localhost');
 
-
+console.log("process.env.REDIS_SEARCH_HOST:"+process.env.REDIS_SEARCH_HOST)
+console.log("process.env.REDIS_HOST:"+process.env.REDIS_HOST)
 function retryStrat(options) {
     if (options.error && options.error.code === "ECONNREFUSED") {
       // End reconnecting on a specific error and flush all commands with
@@ -21,7 +22,7 @@ function retryStrat(options) {
     // reconnect after
     return Math.min(options.attempt * 100, 3000);
   }
-var myRediSearch        = rediSearch(redis,'mentions',{ clientOptions : {host:'redisearch',port:6379,
+var myRediSearch        = rediSearch(redis,'mentions',{ clientOptions : {host:process.env.REDIS_SEARCH_HOST,port:6380,
 autoResubscribe: true,
 lazyConnect: false,
 maxRetriesPerRequest: 10000, retry_strategy:retryStrat} });
@@ -33,7 +34,7 @@ maxRetriesPerRequest: 10000, retry_strategy:retryStrat} });
 });
 
 
-var subscriber = redis.createClient( {host:'redis',port:6379,
+var subscriber = redis.createClient( {host:process.env.REDIS_HOST,port:6379,
 autoResubscribe: true,
 lazyConnect: false,
 maxRetriesPerRequest: 10000, retry_strategy:retryStrat});
